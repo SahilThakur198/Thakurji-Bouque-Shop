@@ -1,35 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Cart — Thakurji Bouque Shop</title>
   <link rel="stylesheet" href="index.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
   <style>
-    .cart-layout { display:grid; grid-template-columns:1fr; gap:var(--space-8); }
-    @media(min-width:768px){ .cart-layout{ grid-template-columns:1fr 380px; align-items:start; } }
-    .checkout-form { margin-top:var(--space-6); }
-    .order-success { text-align:center; padding:var(--space-16) var(--space-4); }
-    .order-success .success-icon { font-size:5rem; margin-bottom:var(--space-4); animation:pulse 2s infinite; }
-    .order-success h2 { color:var(--color-success); margin-bottom:var(--space-4); }
-    .cart-item .remove-btn { color:var(--color-error); font-size:var(--fs-lg); padding:var(--space-2); transition:transform var(--transition-fast); }
-    .cart-item .remove-btn:hover { transform:scale(1.2); }
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    @media(min-width:768px) {
+      .cart-layout {
+        grid-template-columns: 1fr 380px;
+        align-items: start;
+      }
+    }
+
+    .checkout-form {
+      margin-top: var(--space-6);
+    }
+
+    .order-success {
+      text-align: center;
+      padding: var(--space-16) var(--space-4);
+    }
+
+    .order-success .success-icon {
+      font-size: 5rem;
+      margin-bottom: var(--space-4);
+      animation: pulse 2s infinite;
+    }
+
+    .order-success h2 {
+      color: var(--color-success);
+      margin-bottom: var(--space-4);
+    }
+
+    .cart-item .remove-btn {
+      color: var(--color-error);
+      font-size: var(--fs-lg);
+      padding: var(--space-2);
+      transition: transform var(--transition-fast);
+    }
+
+    .cart-item .remove-btn:hover {
+      transform: scale(1.2);
+    }
   </style>
 </head>
+
 <body>
 
   <nav class="navbar scrolled" id="navbar">
     <div class="container">
-      <a href="index.html" class="nav-brand"><div class="logo-icon">🌹</div><h1>Thakurji <span>Bouque Shop</span></h1></a>
-      <div class="nav-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="index.html#contact">Contact</a></div>
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🌹</div>
+        <h1>Thakurji <span>Bouque Shop</span></h1>
+      </a>
+      <div class="nav-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a
+          href="services.html">Services</a><a href="index.html#contact">Contact</a></div>
       <div class="nav-actions">
         <a href="cart.html" class="cart-btn active" id="cartBtn">🛒<span class="cart-badge" id="cartBadge">0</span></a>
         <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
       </div>
     </div>
   </nav>
-  <div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="cart.html">Cart</a></div>
+  <div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a
+      href="services.html">Services</a><a href="cart.html">Cart</a></div>
 
   <div class="page-header">
     <div class="container">
@@ -71,10 +114,13 @@
             </div>
             <div class="form-group">
               <label class="form-label">Special Instructions</label>
-              <textarea class="form-input" id="custNotes" placeholder="Any special message or instructions..." style="min-height:60px"></textarea>
+              <textarea class="form-input" id="custNotes" placeholder="Any special message or instructions..."
+                style="min-height:60px"></textarea>
             </div>
-            <button class="btn btn-primary btn-lg" style="width:100%" onclick="placeOrder()">🛍️ Place Order (Cash on Delivery)</button>
-            <p style="text-align:center;font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--space-3)">Payment will be collected at delivery</p>
+            <button class="btn btn-primary btn-lg" style="width:100%" onclick="placeOrder()">🛍️ Place Order (Cash on
+              Delivery)</button>
+            <p style="text-align:center;font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--space-3)">
+              Payment will be collected at delivery</p>
           </div>
         </div>
       </div>
@@ -91,17 +137,30 @@
       <div class="order-success hidden" id="orderSuccess">
         <div class="success-icon">✅</div>
         <h2>Order Placed Successfully!</h2>
-        <p style="font-size:var(--fs-md);color:var(--text-body);margin-bottom:var(--space-2)">Thank you for your order! 🌹</p>
-        <p style="color:var(--text-muted);margin-bottom:var(--space-8)">Shri Mangesh Thakur will contact you shortly to confirm delivery details.</p>
+        <p style="font-size:var(--fs-md);color:var(--text-body);margin-bottom:var(--space-2)">Thank you for your order!
+          🌹</p>
+        <p style="color:var(--text-muted);margin-bottom:var(--space-8)">Shri Mangesh Thakur will contact you shortly to
+          confirm delivery details. Pleaes do what's app confirmation without it your order will not be confirmed.</p>
         <div style="display:flex;gap:var(--space-4);justify-content:center;flex-wrap:wrap">
           <a href="index.html" class="btn btn-primary btn-lg">Back to Home</a>
-          <a href="https://wa.me/919623289818?text=Hi! I just placed an order on your website." target="_blank" class="btn btn-whatsapp btn-lg">💬 WhatsApp Confirmation</a>
+          <a href="https://wa.me/919623289818?text=Hi! I just placed an order on your website." target="_blank"
+            class="btn btn-whatsapp btn-lg">💬 WhatsApp Confirmation</a>
         </div>
       </div>
     </div>
   </section>
 
-  <footer class="footer"><div class="container"><div class="footer-content"><p>© 2026 Thakurji Bouque Shop, Nashik. All rights reserved.</p><div class="footer-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a></div><p style="margin-top:var(--space-2)">Website by <a href="https://sahilthakur198.github.io/Portfolio/index.html" target="_blank" style="color:var(--color-accent);font-weight:600">Sahil Thakur</a></p></div></div></footer>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>© 2026 Thakurji Bouque Shop, Nashik. All rights reserved.</p>
+        <div class="footer-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a
+            href="services.html">Services</a></div>
+        <p style="margin-top:var(--space-2)">Website by <a href="https://sahilthakur198.github.io/Portfolio/index.html"
+            target="_blank" style="color:var(--color-accent);font-weight:600">Sahil Thakur</a></p>
+      </div>
+    </div>
+  </footer>
   <div class="toast-container" id="toastContainer"></div>
 
   <script src="js/ui.js"></script>
@@ -196,4 +255,5 @@
     document.addEventListener('DOMContentLoaded', renderCart);
   </script>
 </body>
+
 </html>

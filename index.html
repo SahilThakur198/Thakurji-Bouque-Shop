@@ -58,7 +58,7 @@
 
     <div class="hero-content">
       <div class="hero-badge">🌸 Nashik's Trusted Florist Since 2006</div>
-      <h1>Where Every <span class="highlight">Bloom</span> Tells a Story</h1>
+      <h1 id="heroTitle" style="transition: opacity 0.5s ease; min-height: 1.2em;">All <span class="highlight">flowers</span> in one place</h1>
       <p>Fresh bouquets, stunning wedding decorations & personalized floral arrangements — crafted with love by Shri Mangesh Thakur.</p>
       <div class="hero-actions">
         <a href="catalog.html" class="btn btn-primary btn-lg">Browse Catalog</a>
@@ -243,7 +243,7 @@
             <div class="icon-circle">📍</div>
             <div>
               <h4>Address</h4>
-              <p>Thakur Bouque Shop, Infront of Padmanabh Heights, Datta Mandir Road, Gayakward Malla, Nashik, Maharashtra</p>
+              <p><a href="https://maps.google.com/?q=Thakur+Bouque+Shop,+Infront+of+Padmanabh+Heights,+Datta+Mandir+Road,+Nashik,+Maharashtra" target="_blank" style="color:var(--text-body);text-decoration:underline;">Thakur Bouque Shop, Infront of Padmanabh Heights, Datta Mandir Road, Gayakward Malla, Nashik, Maharashtra</a></p>
             </div>
           </div>
           <div class="contact-info-item">
@@ -251,14 +251,14 @@
             <div>
               <h4>Phone</h4>
               <p><a href="tel:+919623289818" style="color:var(--color-accent)">+91 96232 89818</a></p>
-              <p style="margin-top:4px">Shri Mangesh Thakur (Owner)</p>
+              <p style="margin-top:4px">Shri Mangesh Thakur</p>
             </div>
           </div>
           <div class="contact-info-item">
             <div class="icon-circle">⏰</div>
             <div>
               <h4>Working Hours</h4>
-              <p>Mon – Sun: 8:00 AM – 9:00 PM</p>
+              <p>Mon – Sun: 8:00 AM – 10:00 PM</p>
             </div>
           </div>
           <a href="https://wa.me/919623289818?text=Hello%20Thakurji%20Bouque%20Shop!" target="_blank" class="btn btn-whatsapp btn-lg" style="margin-top:var(--space-4)">💬 Chat on WhatsApp</a>
@@ -291,5 +291,28 @@
 
   <script src="js/ui.js"></script>
   <script src="js/cart.js"></script>
+  <script>
+    // Cycle hero title in 3 languages (English, Marathi, Hindi)
+    document.addEventListener("DOMContentLoaded", () => {
+      const heroTitle = document.getElementById("heroTitle");
+      if (!heroTitle) return;
+
+      const titles = [
+        `All <span class="highlight">flowers</span> in one place`,       // English
+        `सर्व <span class="highlight">फुले</span> एकाच ठिकाणी`,          // Marathi
+        `सभी <span class="highlight">फूल</span> एक ही जगह`                 // Hindi
+      ];
+      
+      let index = 0;
+      setInterval(() => {
+        heroTitle.style.opacity = 0; // Fade out
+        setTimeout(() => {
+          index = (index + 1) % titles.length;
+          heroTitle.innerHTML = titles[index];
+          heroTitle.style.opacity = 1; // Fade in
+        }, 500); // 0.5s fade out duration
+      }, 3500); // Change text every 3.5 seconds
+    });
+  </script>
 </body>
 </html>
