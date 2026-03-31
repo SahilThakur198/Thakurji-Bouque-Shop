@@ -378,6 +378,14 @@ h4 { font-size: var(--fs-lg); }
   .hamburger { display: none; }
 }
 
+/* Navbar specific for dark hero backgrounds (Home Page) */
+.navbar-dark:not(.scrolled) .nav-brand h1 { color: var(--text-white); }
+.navbar-dark:not(.scrolled) .nav-brand span { color: var(--color-secondary); }
+.navbar-dark:not(.scrolled) .nav-links a { color: var(--text-white); }
+.navbar-dark:not(.scrolled) .nav-links a::after { background: var(--color-accent); }
+.navbar-dark:not(.scrolled) .cart-btn { background: var(--glass-bg); color: var(--text-white); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+.navbar-dark:not(.scrolled) .hamburger span { background: var(--text-white); }
+
 /* Mobile Menu Overlay */
 .mobile-menu {
   position: fixed;
