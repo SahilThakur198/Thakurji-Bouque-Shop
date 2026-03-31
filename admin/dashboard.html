@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Admin Panel</title>
+  <link rel="stylesheet" href="../index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <style>
+    .admin-topbar { background:var(--bg-white); padding:var(--space-4) var(--space-6); display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow-sm); position:sticky; top:0; z-index:100; }
+    .admin-topbar h2 { font-size:var(--fs-lg); }
+    .quick-actions { display:grid; grid-template-columns:repeat(2,1fr); gap:var(--space-4); margin-bottom:var(--space-8); }
+    @media(min-width:768px){ .quick-actions{ grid-template-columns:repeat(4,1fr); } }
+    .quick-action { display:flex; flex-direction:column; align-items:center; gap:var(--space-3); padding:var(--space-6); background:var(--bg-white); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); transition:all var(--transition-base); text-align:center; }
+    .quick-action:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+    .quick-action .qa-icon { font-size:2rem; }
+    .quick-action h4 { font-size:var(--fs-sm); }
+    .recent-orders { background:var(--bg-white); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); }
+    .recent-orders .orders-header { padding:var(--space-5) var(--space-6); border-bottom:1px solid var(--bg-blush); display:flex; align-items:center; justify-content:space-between; }
+    .order-card { padding:var(--space-4) var(--space-6); border-bottom:1px solid var(--bg-blush); display:flex; align-items:center; gap:var(--space-4); }
+    .order-card:last-child { border-bottom:none; }
+    .order-card .order-info { flex:1; }
+    .order-card .order-info h4 { font-family:var(--font-body); font-size:var(--fs-sm); font-weight:600; }
+    .order-card .order-info p { font-size:var(--fs-xs); color:var(--text-muted); }
+    .order-card .order-amount { font-weight:700; color:var(--color-primary); font-size:var(--fs-md); }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">🌹 Thakurji Admin</div>
+      <nav>
+        <a href="dashboard.html" class="active">📊 Dashboard</a>
+        <a href="products.html">📦 Products</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="../index.html">🌐 View Website</a>
+        <a href="#" onclick="logout()">🚪 Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Mobile Topbar -->
+      <div class="admin-topbar" style="display:flex">
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          <span style="font-size:1.5rem">🌹</span>
+          <h2>Dashboard</h2>
+        </div>
+        <div style="display:flex;gap:var(--space-3)">
+          <a href="products.html" class="btn btn-sm btn-outline">📦 Products</a>
+          <a href="orders.html" class="btn btn-sm btn-outline">📋 Orders</a>
+          <button onclick="logout()" class="btn btn-sm btn-outline" style="color:var(--color-error)">Logout</button>
+        </div>
+      </div>
+
+      <div style="padding:var(--space-6)">
+        <!-- Welcome -->
+        <div style="margin-bottom:var(--space-8)">
+          <h2 style="margin-bottom:var(--space-2)">Welcome, Mangesh ji! 🙏</h2>
+          <p class="text-muted">Here's what's happening with your shop today.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--bg-blush);color:var(--color-primary)">📦</div>
+            <h3 id="totalProducts">12</h3>
+            <p>Total Products</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#FFF3CD;color:#856404">⏳</div>
+            <h3 id="pendingOrders">0</h3>
+            <p>Pending Orders</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#D4EDDA;color:#155724">✅</div>
+            <h3 id="deliveredOrders">0</h3>
+            <p>Delivered</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#CCE5FF;color:#004085">💰</div>
+            <h3 id="totalRevenue">₹0</h3>
+            <p>Total Revenue</p>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h3 style="margin-bottom:var(--space-4)">Quick Actions</h3>
+        <div class="quick-actions">
+          <a href="products.html" class="quick-action">
+            <span class="qa-icon">➕</span>
+            <h4>Add Product</h4>
+          </a>
+          <a href="orders.html" class="quick-action">
+            <span class="qa-icon">📋</span>
+            <h4>View Orders</h4>
+          </a>
+          <a href="../catalog.html" class="quick-action">
+            <span class="qa-icon">👁️</span>
+            <h4>View Catalog</h4>
+          </a>
+          <a href="https://wa.me/919623289818" target="_blank" class="quick-action">
+            <span class="qa-icon">💬</span>
+            <h4>WhatsApp</h4>
+          </a>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="recent-orders">
+          <div class="orders-header">
+            <h3>Recent Orders</h3>
+            <a href="orders.html" class="btn btn-sm btn-outline">View All</a>
+          </div>
+          <div id="recentOrdersList">
+            <div style="padding:var(--space-8);text-align:center;color:var(--text-muted)">
+              <p style="font-size:2rem;margin-bottom:var(--space-2)">📭</p>
+              <p>No orders yet. Orders will appear here when customers place them.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Auth guard
+    if (sessionStorage.getItem('thakurji_admin') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    function logout() {
+      sessionStorage.removeItem('thakurji_admin');
+      sessionStorage.removeItem('thakurji_admin_time');
+      window.location.href = 'login.html';
+    }
+
+    // Load stats from localStorage
+    function loadDashboard() {
+      const orders = JSON.parse(localStorage.getItem('thakurji_orders') || '[]');
+      const pending = orders.filter(o => o.status === 'pending').length;
+      const delivered = orders.filter(o => o.status === 'delivered').length;
+      const revenue = orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0);
+
+      document.getElementById('pendingOrders').textContent = pending;
+      document.getElementById('deliveredOrders').textContent = delivered;
+      document.getElementById('totalRevenue').textContent = '₹' + revenue.toLocaleString('en-IN');
+
+      // Recent orders
+      const recent = orders.slice(-5).reverse();
+      const listEl = document.getElementById('recentOrdersList');
+      if (recent.length > 0) {
+        listEl.innerHTML = recent.map(o => `
+          <div class="order-card">
+            <div class="order-info">
+              <h4>${o.customerName} — ${o.id}</h4>
+              <p>${o.phone} · ${new Date(o.createdAt).toLocaleDateString('en-IN')}</p>
+            </div>
+            <span class="status-badge ${o.status}">${o.status}</span>
+            <span class="order-amount">₹${o.total.toLocaleString('en-IN')}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

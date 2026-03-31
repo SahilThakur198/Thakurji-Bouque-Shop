@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — Thakurji Bouque Shop</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <style>
+    .product-detail { display:grid; grid-template-columns:1fr; gap:var(--space-8); }
+    @media(min-width:768px){ .product-detail{ grid-template-columns:1fr 1fr; } }
+    .product-img-main { width:100%; border-radius:var(--radius-xl); aspect-ratio:1; object-fit:cover; box-shadow:var(--shadow-lg); }
+    .product-info h1 { font-size:var(--fs-2xl); margin-bottom:var(--space-2); }
+    .product-info .category-label { display:inline-block; padding:var(--space-1) var(--space-4); background:var(--bg-blush); color:var(--color-primary); font-size:var(--fs-xs); font-weight:600; border-radius:var(--radius-full); text-transform:uppercase; letter-spacing:1px; margin-bottom:var(--space-4); }
+    .product-info .price-block { display:flex; align-items:baseline; gap:var(--space-4); margin-bottom:var(--space-6); }
+    .product-info .price-block .selling { font-size:var(--fs-3xl); font-weight:700; color:var(--color-primary); }
+    .product-info .price-block .mrp { font-size:var(--fs-lg); color:var(--text-muted); text-decoration:line-through; }
+    .product-info .price-block .save { font-size:var(--fs-sm); background:var(--color-success); color:white; padding:var(--space-1) var(--space-3); border-radius:var(--radius-full); font-weight:600; }
+    .product-description { color:var(--text-body); line-height:1.8; margin-bottom:var(--space-6); }
+    .product-actions { display:flex; gap:var(--space-4); flex-wrap:wrap; }
+    .related-section { margin-top:var(--space-16); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand"><div class="logo-icon">🌹</div><h1>Thakurji <span>Bouque Shop</span></h1></a>
+      <div class="nav-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="index.html#contact">Contact</a></div>
+      <div class="nav-actions">
+        <a href="cart.html" class="cart-btn" id="cartBtn">🛒<span class="cart-badge" id="cartBadge">0</span></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="cart.html">Cart</a></div>
+
+  <div class="page-header" style="padding-bottom:var(--space-8)">
+    <div class="container">
+      <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><a href="catalog.html">Catalog</a><span>/</span><span id="breadcrumbName">Product</span></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="product-detail" id="productDetail">
+        <div><img class="product-img-main" id="productImg" src="images/cat-bouquets.png" alt="Product"></div>
+        <div class="product-info">
+          <span class="category-label" id="productCat">Bouquets</span>
+          <h1 id="productName">Loading...</h1>
+          <div class="price-block">
+            <span class="selling" id="productPrice">₹0</span>
+            <span class="mrp" id="productMrp">₹0</span>
+            <span class="save" id="productSave">Save ₹0</span>
+          </div>
+          <p class="product-description" id="productDesc">Loading product details...</p>
+          <div class="product-actions">
+            <button class="btn btn-primary btn-lg" id="addToCartBtn">🛒 Add to Cart</button>
+            <a href="https://wa.me/919623289818?text=Hi!%20I%20am%20interested%20in%20this%20product" target="_blank" class="btn btn-whatsapp btn-lg">💬 Enquire on WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div class="related-section">
+        <div class="section-title"><h2>You May Also Like</h2></div>
+        <div class="products-grid" id="relatedProducts"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-content"><p>© 2026 Thakurji Bouque Shop, Nashik. All rights reserved.</p><div class="footer-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a></div><p style="margin-top:var(--space-2)">Website by <a href="https://sahilthakur198.github.io/Portfolio/index.html" target="_blank" style="color:var(--color-accent);font-weight:600">Sahil Thakur</a></p></div></div></footer>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/ui.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/products.js"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart — Thakurji Bouque Shop</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <style>
+    .cart-layout { display:grid; grid-template-columns:1fr; gap:var(--space-8); }
+    @media(min-width:768px){ .cart-layout{ grid-template-columns:1fr 380px; align-items:start; } }
+    .checkout-form { margin-top:var(--space-6); }
+    .order-success { text-align:center; padding:var(--space-16) var(--space-4); }
+    .order-success .success-icon { font-size:5rem; margin-bottom:var(--space-4); animation:pulse 2s infinite; }
+    .order-success h2 { color:var(--color-success); margin-bottom:var(--space-4); }
+    .cart-item .remove-btn { color:var(--color-error); font-size:var(--fs-lg); padding:var(--space-2); transition:transform var(--transition-fast); }
+    .cart-item .remove-btn:hover { transform:scale(1.2); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand"><div class="logo-icon">🌹</div><h1>Thakurji <span>Bouque Shop</span></h1></a>
+      <div class="nav-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="index.html#contact">Contact</a></div>
+      <div class="nav-actions">
+        <a href="cart.html" class="cart-btn active" id="cartBtn">🛒<span class="cart-badge" id="cartBadge">0</span></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="cart.html">Cart</a></div>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><span>Cart</span></div>
+      <h1>Your Cart</h1>
+    </div>
+  </div>
+
+  <section class="section" id="cartSection">
+    <div class="container">
+      <!-- Cart Content -->
+      <div class="cart-layout" id="cartContent">
+        <div>
+          <div class="cart-items" id="cartItems"></div>
+        </div>
+        <div class="cart-summary" id="cartSummary">
+          <h3>Order Summary</h3>
+          <div class="summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+          <div class="summary-row"><span>Delivery</span><span style="color:var(--color-success)">FREE</span></div>
+          <div class="summary-row total"><span>Total</span><span id="totalAmount">₹0</span></div>
+
+          <div class="checkout-form">
+            <h4 style="margin-bottom:var(--space-4);font-family:var(--font-heading)">Delivery Details</h4>
+            <div class="form-group">
+              <label class="form-label">Your Name *</label>
+              <input type="text" class="form-input" id="custName" placeholder="Enter full name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-input" id="custPhone" placeholder="10-digit mobile number" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Delivery Address *</label>
+              <textarea class="form-input" id="custAddress" placeholder="Full address in Nashik" required></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Delivery Date</label>
+              <input type="date" class="form-input" id="custDate">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Special Instructions</label>
+              <textarea class="form-input" id="custNotes" placeholder="Any special message or instructions..." style="min-height:60px"></textarea>
+            </div>
+            <button class="btn btn-primary btn-lg" style="width:100%" onclick="placeOrder()">🛍️ Place Order (Cash on Delivery)</button>
+            <p style="text-align:center;font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--space-3)">Payment will be collected at delivery</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Cart State -->
+      <div class="empty-state hidden" id="emptyCart">
+        <div class="empty-icon">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p>Browse our beautiful collection and add items to your cart</p>
+        <a href="catalog.html" class="btn btn-primary btn-lg">Browse Catalog</a>
+      </div>
+
+      <!-- Order Success -->
+      <div class="order-success hidden" id="orderSuccess">
+        <div class="success-icon">✅</div>
+        <h2>Order Placed Successfully!</h2>
+        <p style="font-size:var(--fs-md);color:var(--text-body);margin-bottom:var(--space-2)">Thank you for your order! 🌹</p>
+        <p style="color:var(--text-muted);margin-bottom:var(--space-8)">Shri Mangesh Thakur will contact you shortly to confirm delivery details.</p>
+        <div style="display:flex;gap:var(--space-4);justify-content:center;flex-wrap:wrap">
+          <a href="index.html" class="btn btn-primary btn-lg">Back to Home</a>
+          <a href="https://wa.me/919623289818?text=Hi! I just placed an order on your website." target="_blank" class="btn btn-whatsapp btn-lg">💬 WhatsApp Confirmation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-content"><p>© 2026 Thakurji Bouque Shop, Nashik. All rights reserved.</p><div class="footer-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a></div><p style="margin-top:var(--space-2)">Website by <a href="https://sahilthakur198.github.io/Portfolio/index.html" target="_blank" style="color:var(--color-accent);font-weight:600">Sahil Thakur</a></p></div></div></footer>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/ui.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    function renderCart() {
+      const cart = getCart();
+      const itemsEl = document.getElementById('cartItems');
+      const content = document.getElementById('cartContent');
+      const empty = document.getElementById('emptyCart');
+      const summary = document.getElementById('cartSummary');
+
+      if (cart.length === 0) {
+        content.classList.add('hidden');
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      content.classList.remove('hidden');
+      empty.classList.add('hidden');
+
+      itemsEl.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-info">
+            <h4>${item.name}</h4>
+            <p class="text-primary" style="font-weight:700">${formatPrice(item.price)}</p>
+            <div class="qty-controls">
+              <button onclick="updateQty('${item.id}', -1)">−</button>
+              <span style="font-weight:600;min-width:24px;text-align:center">${item.qty || 1}</span>
+              <button onclick="updateQty('${item.id}', 1)">+</button>
+            </div>
+          </div>
+          <button class="remove-btn" onclick="removeFromCart('${item.id}');renderCart()">✕</button>
+        </div>
+      `).join('');
+
+      const total = getCartTotal();
+      document.getElementById('subtotal').textContent = formatPrice(total);
+      document.getElementById('totalAmount').textContent = formatPrice(total);
+    }
+
+    function placeOrder() {
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+
+      if (!name || !phone || !address) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      if (!/^\d{10}$/.test(phone)) {
+        showToast('Please enter a valid 10-digit phone number', 'error');
+        return;
+      }
+
+      const cart = getCart();
+      if (cart.length === 0) {
+        showToast('Your cart is empty', 'error');
+        return;
+      }
+
+      // Build order (stored locally for now; Firebase integration later)
+      const order = {
+        customerName: name,
+        phone: phone,
+        address: address,
+        deliveryDate: document.getElementById('custDate').value || 'ASAP',
+        notes: document.getElementById('custNotes').value.trim(),
+        items: cart,
+        total: getCartTotal(),
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+
+      // Save to localStorage orders list
+      const orders = JSON.parse(localStorage.getItem('thakurji_orders') || '[]');
+      order.id = 'ORD-' + Date.now();
+      orders.push(order);
+      localStorage.setItem('thakurji_orders', JSON.stringify(orders));
+
+      // Clear cart
+      clearCart();
+
+      // Show success
+      document.getElementById('cartContent').classList.add('hidden');
+      document.getElementById('orderSuccess').classList.remove('hidden');
+
+      showToast('Order placed successfully! 🎉', 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCart);
+  </script>
+</body>
+</html>

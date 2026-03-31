@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — Admin Panel</title>
+  <link rel="stylesheet" href="../index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <style>
+    .admin-topbar { background:var(--bg-white); padding:var(--space-4) var(--space-6); display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow-sm); position:sticky; top:0; z-index:100; }
+    .orders-list { display:flex; flex-direction:column; gap:var(--space-4); }
+    .order-detail-card { background:var(--bg-white); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); overflow:hidden; }
+    .order-detail-header { padding:var(--space-5) var(--space-6); border-bottom:1px solid var(--bg-blush); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-3); }
+    .order-detail-header h4 { font-family:var(--font-body); font-weight:600; }
+    .order-detail-body { padding:var(--space-5) var(--space-6); }
+    .order-detail-body .detail-row { display:flex; gap:var(--space-4); margin-bottom:var(--space-3); font-size:var(--fs-sm); }
+    .order-detail-body .detail-row .label { color:var(--text-muted); min-width:100px; }
+    .order-items-list { margin-top:var(--space-4); }
+    .order-item-row { display:flex; justify-content:space-between; padding:var(--space-2) 0; font-size:var(--fs-sm); border-bottom:1px dashed var(--bg-blush); }
+    .order-detail-footer { padding:var(--space-4) var(--space-6); border-top:1px solid var(--bg-blush); display:flex; gap:var(--space-2); flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .order-total { font-size:var(--fs-xl); font-weight:700; color:var(--color-primary); }
+    .status-select { padding:var(--space-2) var(--space-3); border:2px solid var(--bg-blush); border-radius:var(--radius-sm); font-size:var(--fs-sm); font-weight:600; cursor:pointer; background:var(--bg-white); }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">🌹 Thakurji Admin</div>
+      <nav>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="products.html">📦 Products</a>
+        <a href="orders.html" class="active">📋 Orders</a>
+        <a href="../index.html">🌐 View Website</a>
+        <a href="#" onclick="logout()">🚪 Logout</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          <a href="dashboard.html" style="font-size:1.2rem">←</a>
+          <h2 style="font-size:var(--fs-lg)">Orders</h2>
+        </div>
+        <div style="display:flex;gap:var(--space-3)">
+          <a href="dashboard.html" class="btn btn-sm btn-outline">📊 Dashboard</a>
+          <a href="products.html" class="btn btn-sm btn-outline">📦 Products</a>
+          <button onclick="logout()" class="btn btn-sm btn-outline" style="color:var(--color-error)">Logout</button>
+        </div>
+      </div>
+
+      <div style="padding:var(--space-6)">
+        <!-- Filter -->
+        <div class="filter-tabs" style="margin-bottom:var(--space-6)">
+          <button class="filter-tab active" data-status="all" onclick="filterOrders('all',this)">All</button>
+          <button class="filter-tab" data-status="pending" onclick="filterOrders('pending',this)">⏳ Pending</button>
+          <button class="filter-tab" data-status="confirmed" onclick="filterOrders('confirmed',this)">✅ Confirmed</button>
+          <button class="filter-tab" data-status="delivered" onclick="filterOrders('delivered',this)">📦 Delivered</button>
+          <button class="filter-tab" data-status="cancelled" onclick="filterOrders('cancelled',this)">❌ Cancelled</button>
+        </div>
+
+        <div class="orders-list" id="ordersList"></div>
+
+        <div class="empty-state hidden" id="emptyOrders">
+          <div class="empty-icon">📭</div>
+          <h3>No orders found</h3>
+          <p>Orders from customers will appear here</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    if (sessionStorage.getItem('thakurji_admin') !== 'true') window.location.href = 'login.html';
+    function logout() { sessionStorage.removeItem('thakurji_admin'); window.location.href = 'login.html'; }
+
+    function showToast(msg, type='info') {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div'); t.className = 'toast ' + type;
+      t.innerHTML = `<span>${msg}</span>`; c.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    let currentFilter = 'all';
+
+    function getOrders() {
+      return JSON.parse(localStorage.getItem('thakurji_orders') || '[]');
+    }
+
+    function saveOrders(orders) {
+      localStorage.setItem('thakurji_orders', JSON.stringify(orders));
+    }
+
+    function filterOrders(status, btn) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderOrders();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const orders = getOrders();
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        saveOrders(orders);
+        showToast(`Order ${orderId} → ${newStatus}`, 'success');
+        renderOrders();
+      }
+    }
+
+    function deleteOrder(orderId) {
+      if (!confirm('Delete this order permanently?')) return;
+      const orders = getOrders().filter(o => o.id !== orderId);
+      saveOrders(orders);
+      showToast('Order deleted', 'info');
+      renderOrders();
+    }
+
+    function renderOrders() {
+      let orders = getOrders().reverse();
+      if (currentFilter !== 'all') {
+        orders = orders.filter(o => o.status === currentFilter);
+      }
+
+      const listEl = document.getElementById('ordersList');
+      const emptyEl = document.getElementById('emptyOrders');
+
+      if (orders.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      listEl.innerHTML = orders.map(o => {
+        const date = new Date(o.createdAt).toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' });
+        const itemsList = (o.items || []).map(i =>
+          `<div class="order-item-row"><span>${i.name} × ${i.qty || 1}</span><span>₹${(i.price * (i.qty || 1)).toLocaleString('en-IN')}</span></div>`
+        ).join('');
+
+        return `
+          <div class="order-detail-card">
+            <div class="order-detail-header">
+              <div>
+                <h4>${o.id}</h4>
+                <span style="font-size:var(--fs-xs);color:var(--text-muted)">${date}</span>
+              </div>
+              <span class="status-badge ${o.status}">${o.status}</span>
+            </div>
+            <div class="order-detail-body">
+              <div class="detail-row"><span class="label">Customer:</span><strong>${o.customerName}</strong></div>
+              <div class="detail-row"><span class="label">Phone:</span><a href="tel:${o.phone}" style="color:var(--color-primary)">${o.phone}</a></div>
+              <div class="detail-row"><span class="label">Address:</span><span>${o.address}</span></div>
+              <div class="detail-row"><span class="label">Delivery:</span><span>${o.deliveryDate || 'ASAP'}</span></div>
+              ${o.notes ? `<div class="detail-row"><span class="label">Notes:</span><span>${o.notes}</span></div>` : ''}
+              <div class="order-items-list">
+                <strong style="font-size:var(--fs-sm)">Items:</strong>
+                ${itemsList}
+              </div>
+            </div>
+            <div class="order-detail-footer">
+              <span class="order-total">Total: ₹${o.total.toLocaleString('en-IN')}</span>
+              <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap">
+                <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+                  <option value="pending" ${o.status==='pending'?'selected':''}>⏳ Pending</option>
+                  <option value="confirmed" ${o.status==='confirmed'?'selected':''}>✅ Confirmed</option>
+                  <option value="delivered" ${o.status==='delivered'?'selected':''}>📦 Delivered</option>
+                  <option value="cancelled" ${o.status==='cancelled'?'selected':''}>❌ Cancelled</option>
+                </select>
+                <a href="https://wa.me/91${o.phone}?text=Hello ${encodeURIComponent(o.customerName)}! Your order ${o.id} from Thakurji Bouque Shop has been confirmed." target="_blank" class="btn btn-whatsapp btn-sm">💬 WhatsApp</a>
+                <button class="btn btn-sm" style="background:var(--color-error);color:white" onclick="deleteOrder('${o.id}')">🗑️</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderOrders();
+  </script>
+</body>
+</html>

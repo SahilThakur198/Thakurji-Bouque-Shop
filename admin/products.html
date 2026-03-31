@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Admin Panel</title>
+  <link rel="stylesheet" href="../index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <style>
+    .admin-topbar { background:var(--bg-white); padding:var(--space-4) var(--space-6); display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow-sm); position:sticky; top:0; z-index:100; }
+    .product-grid-admin { display:grid; grid-template-columns:repeat(2,1fr); gap:var(--space-4); }
+    @media(min-width:768px){ .product-grid-admin{ grid-template-columns:repeat(3,1fr); } }
+    @media(min-width:1024px){ .product-grid-admin{ grid-template-columns:repeat(4,1fr); } }
+    .admin-product-card { background:var(--bg-white); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-sm); }
+    .admin-product-card img { width:100%; aspect-ratio:1; object-fit:cover; }
+    .admin-product-card .info { padding:var(--space-3); }
+    .admin-product-card .info h4 { font-size:var(--fs-sm); font-family:var(--font-heading); margin-bottom:var(--space-1); }
+    .admin-product-card .info .price { font-weight:700; color:var(--color-primary); font-size:var(--fs-sm); }
+    .admin-product-card .actions { display:flex; gap:var(--space-2); padding:0 var(--space-3) var(--space-3); }
+    .admin-product-card .actions button { flex:1; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">🌹 Thakurji Admin</div>
+      <nav>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="products.html" class="active">📦 Products</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="../index.html">🌐 View Website</a>
+        <a href="#" onclick="logout()">🚪 Logout</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          <a href="dashboard.html" style="font-size:1.2rem">←</a>
+          <h2 style="font-size:var(--fs-lg)">Products</h2>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal()">➕ Add Product</button>
+      </div>
+
+      <div style="padding:var(--space-6)">
+        <div class="product-grid-admin" id="adminProductGrid"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Product Modal -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Product</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input type="text" class="form-input" id="pName" placeholder="e.g. Red Rose Bouquet">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-input" id="pCategory">
+            <option value="bouquets">💐 Bouquets</option>
+            <option value="flowers">🌺 Flowers</option>
+            <option value="wedding">💒 Wedding</option>
+            <option value="onspot">🚗 On-Spot Services</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+          <div class="form-group">
+            <label class="form-label">MRP (₹) *</label>
+            <input type="number" class="form-input" id="pMRP" placeholder="999">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Selling Price (₹) *</label>
+            <input type="number" class="form-input" id="pPrice" placeholder="799">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-input" id="pDesc" placeholder="Describe the product..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image URL</label>
+          <input type="text" class="form-input" id="pImage" placeholder="images/product.png or URL">
+          <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--space-1)">Use a relative path or full URL. Firebase image upload coming soon.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveProduct()">💾 Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    if (sessionStorage.getItem('thakurji_admin') !== 'true') window.location.href = 'login.html';
+    function logout() { sessionStorage.removeItem('thakurji_admin'); window.location.href = 'login.html'; }
+
+    function showToast(msg, type='info') {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      t.className = 'toast ' + type;
+      t.innerHTML = `<span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    const PRODUCTS_KEY = 'thakurji_products';
+
+    function getAdminProducts() {
+      const stored = localStorage.getItem(PRODUCTS_KEY);
+      if (stored) return JSON.parse(stored);
+      // Default sample products
+      const defaults = [
+        { id:'1', name:'Red Rose Premium Bouquet', category:'bouquets', mrp:999, sellingPrice:799, image:'../images/cat-bouquets.png', description:'25 premium long-stem red roses' },
+        { id:'2', name:'Mixed Orchid Bundle', category:'flowers', mrp:599, sellingPrice:499, image:'../images/cat-flowers.png', description:'Exotic orchid collection' },
+        { id:'3', name:'Wedding Haar Set', category:'wedding', mrp:2999, sellingPrice:2499, image:'../images/cat-wedding.png', description:'Bridal garland set' },
+        { id:'4', name:'Car Decoration Package', category:'onspot', mrp:1999, sellingPrice:1799, image:'../images/cat-onspot.png', description:'Complete car decoration' },
+        { id:'5', name:'Sunflower Joy Bouquet', category:'bouquets', mrp:699, sellingPrice:549, image:'../images/cat-flowers.png', description:'12 large sunflowers' },
+        { id:'6', name:'Jasmine Garland (10 pcs)', category:'flowers', mrp:250, sellingPrice:199, image:'../images/cat-bouquets.png', description:'Fresh mogra garlands' },
+        { id:'7', name:'Mandap Decoration Full', category:'wedding', mrp:25000, sellingPrice:19999, image:'../images/cat-wedding.png', description:'Complete mandap setup' },
+        { id:'8', name:'Door Decoration', category:'onspot', mrp:499, sellingPrice:399, image:'../images/cat-onspot.png', description:'Toran-style door decoration' },
+        { id:'9', name:'White Lily Elegance', category:'bouquets', mrp:1299, sellingPrice:999, image:'../images/cat-flowers.png', description:'15 white Asiatic lilies' },
+        { id:'10', name:'Home Decoration Package', category:'onspot', mrp:3500, sellingPrice:2999, image:'../images/cat-onspot.png', description:'Festival home decoration' },
+        { id:'11', name:'Marigold Bulk (1 kg)', category:'flowers', mrp:150, sellingPrice:120, image:'../images/cat-bouquets.png', description:'Loose marigold flowers' },
+        { id:'12', name:'Reception Stage Décor', category:'wedding', mrp:35000, sellingPrice:29999, image:'../images/cat-wedding.png', description:'Luxury reception decoration' },
+      ];
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(defaults));
+      return defaults;
+    }
+
+    function saveAdminProducts(products) {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    }
+
+    function renderProducts() {
+      const products = getAdminProducts();
+      const grid = document.getElementById('adminProductGrid');
+      const catLabels = { bouquets:'Bouquets', flowers:'Flowers', wedding:'Wedding', onspot:'On-Spot' };
+      grid.innerHTML = products.map(p => `
+        <div class="admin-product-card">
+          <img src="${p.image}" alt="${p.name}" onerror="this.src='../images/cat-bouquets.png'">
+          <div class="info">
+            <span style="font-size:var(--fs-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">${catLabels[p.category]||p.category}</span>
+            <h4>${p.name}</h4>
+            <p class="price">₹${Number(p.sellingPrice).toLocaleString('en-IN')} <span style="text-decoration:line-through;color:var(--text-muted);font-weight:400;font-size:var(--fs-xs)">₹${Number(p.mrp).toLocaleString('en-IN')}</span></p>
+          </div>
+          <div class="actions">
+            <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')">✏️ Edit</button>
+            <button class="btn btn-sm" style="background:var(--color-error);color:white" onclick="deleteProduct('${p.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add Product';
+      document.getElementById('editId').value = '';
+      document.getElementById('pName').value = '';
+      document.getElementById('pCategory').value = 'bouquets';
+      document.getElementById('pMRP').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pDesc').value = '';
+      document.getElementById('pImage').value = '';
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function editProduct(id) {
+      const p = getAdminProducts().find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('modalTitle').textContent = 'Edit Product';
+      document.getElementById('editId').value = p.id;
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pCategory').value = p.category;
+      document.getElementById('pMRP').value = p.mrp;
+      document.getElementById('pPrice').value = p.sellingPrice;
+      document.getElementById('pDesc').value = p.description || '';
+      document.getElementById('pImage').value = p.image || '';
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    function saveProduct() {
+      const name = document.getElementById('pName').value.trim();
+      const mrp = Number(document.getElementById('pMRP').value);
+      const price = Number(document.getElementById('pPrice').value);
+      if (!name || !mrp || !price) { showToast('Please fill required fields', 'error'); return; }
+
+      const products = getAdminProducts();
+      const editId = document.getElementById('editId').value;
+
+      const product = {
+        id: editId || 'P' + Date.now(),
+        name: name,
+        category: document.getElementById('pCategory').value,
+        mrp: mrp,
+        sellingPrice: price,
+        description: document.getElementById('pDesc').value.trim(),
+        image: document.getElementById('pImage').value.trim() || '../images/cat-bouquets.png',
+      };
+
+      if (editId) {
+        const idx = products.findIndex(p => p.id === editId);
+        if (idx >= 0) products[idx] = product;
+        showToast('Product updated!', 'success');
+      } else {
+        products.push(product);
+        showToast('Product added!', 'success');
+      }
+
+      saveAdminProducts(products);
+      closeModal();
+      renderProducts();
+    }
+
+    function deleteProduct(id) {
+      if (!confirm('Delete this product?')) return;
+      const products = getAdminProducts().filter(p => p.id !== id);
+      saveAdminProducts(products);
+      showToast('Product deleted', 'info');
+      renderProducts();
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>

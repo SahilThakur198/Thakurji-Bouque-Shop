@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog — Thakurji Bouque Shop</title>
+  <meta name="description" content="Browse our collection of fresh bouquets, flowers, wedding decorations and on-spot services. Order with Cash on Delivery in Nashik.">
+  <link rel="stylesheet" href="index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🌹</div>
+        <h1>Thakurji <span>Bouque Shop</span></h1>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="catalog.html" class="active">Catalog</a>
+        <a href="services.html">Services</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <a href="cart.html" class="cart-btn" id="cartBtn">🛒<span class="cart-badge" id="cartBadge">0</span></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a><a href="index.html#contact">Contact</a><a href="cart.html">Cart</a>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><span>Catalog</span></div>
+      <h1>Our Collection</h1>
+      <p>Handpicked flowers & arrangements for every occasion</p>
+    </div>
+  </div>
+
+  <!-- Catalog -->
+  <section class="section">
+    <div class="container">
+      <!-- Filter Tabs -->
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-cat="all">All</button>
+        <button class="filter-tab" data-cat="bouquets">💐 Bouquets</button>
+        <button class="filter-tab" data-cat="flowers">🌺 Flowers</button>
+        <button class="filter-tab" data-cat="wedding">💒 Wedding</button>
+        <button class="filter-tab" data-cat="onspot">🚗 On-Spot</button>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="catalogGrid"></div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden" id="emptyState">
+        <div class="empty-icon">🌻</div>
+        <h3>No products found</h3>
+        <p>Try selecting a different category</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-content">
+      <p>© 2026 Thakurji Bouque Shop, Nashik. All rights reserved.</p>
+      <div class="footer-links"><a href="index.html">Home</a><a href="catalog.html">Catalog</a><a href="services.html">Services</a></div>
+      <p style="margin-top:var(--space-2)">Website by <a href="https://sahilthakur198.github.io/Portfolio/index.html" target="_blank" style="color:var(--color-accent);font-weight:600">Sahil Thakur</a></p>
+    </div></div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/ui.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/products.js"></script>
+</body>
+</html>

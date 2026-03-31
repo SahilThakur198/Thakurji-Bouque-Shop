@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Thakurji Bouque Shop</title>
+  <link rel="stylesheet" href="../index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+  <style>
+    .login-page { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--bg-dark) 0%,#4A0E1A 50%,var(--color-primary-dark) 100%); padding:var(--space-4); }
+    .login-card { background:var(--bg-white); border-radius:var(--radius-xl); padding:var(--space-10); width:100%; max-width:420px; box-shadow:var(--shadow-xl); text-align:center; animation:fadeInUp 0.6s ease; }
+    .login-card .logo { font-size:3rem; margin-bottom:var(--space-4); }
+    .login-card h1 { font-size:var(--fs-2xl); margin-bottom:var(--space-2); }
+    .login-card .subtitle { color:var(--text-muted); font-size:var(--fs-sm); margin-bottom:var(--space-8); }
+    .login-card .form-group { text-align:left; }
+    .login-card .btn { width:100%; margin-top:var(--space-4); }
+    .login-card .back-link { display:inline-block; margin-top:var(--space-6); color:var(--text-muted); font-size:var(--fs-sm); }
+    .login-card .back-link:hover { color:var(--color-primary); }
+    .login-error { background:#FFF0F0; color:var(--color-error); padding:var(--space-3); border-radius:var(--radius-sm); font-size:var(--fs-sm); margin-top:var(--space-4); display:none; }
+  </style>
+</head>
+<body>
+
+  <div class="login-page">
+    <div class="login-card">
+      <div class="logo">🌹</div>
+      <h1>Admin Panel</h1>
+      <p class="subtitle">Thakurji Bouque Shop Management</p>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" id="username" placeholder="Enter admin username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">🔐 Login</button>
+        <div class="login-error" id="loginError">Invalid username or password</div>
+      </form>
+
+      <a href="../index.html" class="back-link">← Back to Website</a>
+    </div>
+  </div>
+
+  <script>
+    // Simple local auth (replace with Firebase Auth later)
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'thakurji2026';
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        sessionStorage.setItem('thakurji_admin', 'true');
+        sessionStorage.setItem('thakurji_admin_time', Date.now());
+        window.location.href = 'dashboard.html';
+      } else {
+        errorEl.style.display = 'block';
+        setTimeout(() => errorEl.style.display = 'none', 3000);
+      }
+    }
+
+    // If already logged in, redirect
+    if (sessionStorage.getItem('thakurji_admin') === 'true') {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>
