@@ -85,9 +85,10 @@
           <textarea class="form-input" id="pDesc" placeholder="Describe the product..."></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label">Image URL</label>
-          <input type="text" class="form-input" id="pImage" placeholder="images/product.png or URL">
-          <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--space-1)">Use a relative path or full URL. Firebase image upload coming soon.</p>
+          <label class="form-label">Product Image</label>
+          <input type="file" class="form-input" id="pImageFile" accept="image/*" onchange="previewImage(event)">
+          <input type="hidden" id="pImageBase64">
+          <img id="pImagePreview" src="" style="display:none; width:100px; height:100px; object-fit:cover; margin-top:var(--space-2); border-radius:var(--radius-sm); border:1px solid #ddd;">
         </div>
       </div>
       <div class="modal-footer">
@@ -99,11 +100,17 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
-  <script>
-    if (sessionStorage.getItem('thakurji_admin') !== 'true') window.location.href = 'login.html';
-    function logout() { sessionStorage.removeItem('thakurji_admin'); window.location.href = 'login.html'; }
+  <script type="module">
+    import { db, storage, collection, getDocs, doc, setDoc, deleteDoc, ref, uploadString, getDownloadURL } from "../js/firebaseConfig.js";
 
-    function showToast(msg, type='info') {
+    if (sessionStorage.getItem('thakurji_admin') !== 'true') window.location.href = 'login.html';
+    
+    window.logout = function() {
+      sessionStorage.removeItem('thakurji_admin'); 
+      window.location.href = 'login.html'; 
+    }
+
+    window.showToast = function(msg, type='info') {
       const c = document.getElementById('toastContainer');
       const t = document.createElement('div');
       t.className = 'toast ' + type;
@@ -112,55 +119,38 @@
       setTimeout(() => t.remove(), 3000);
     }
 
-    const PRODUCTS_KEY = 'thakurji_products';
+    let adminProducts = [];
 
-    function getAdminProducts() {
-      const stored = localStorage.getItem(PRODUCTS_KEY);
-      if (stored) return JSON.parse(stored);
-      // Default sample products
-      const defaults = [
-        { id:'1', name:'Red Rose Premium Bouquet', category:'bouquets', mrp:999, sellingPrice:799, image:'../images/cat-bouquets.png', description:'25 premium long-stem red roses' },
-        { id:'2', name:'Mixed Orchid Bundle', category:'flowers', mrp:599, sellingPrice:499, image:'../images/cat-flowers.png', description:'Exotic orchid collection' },
-        { id:'3', name:'Wedding Haar Set', category:'wedding', mrp:2999, sellingPrice:2499, image:'../images/cat-wedding.png', description:'Bridal garland set' },
-        { id:'4', name:'Car Decoration Package', category:'onspot', mrp:1999, sellingPrice:1799, image:'../images/cat-onspot.png', description:'Complete car decoration' },
-        { id:'5', name:'Sunflower Joy Bouquet', category:'bouquets', mrp:699, sellingPrice:549, image:'../images/cat-flowers.png', description:'12 large sunflowers' },
-        { id:'6', name:'Jasmine Garland (10 pcs)', category:'flowers', mrp:250, sellingPrice:199, image:'../images/cat-bouquets.png', description:'Fresh mogra garlands' },
-        { id:'7', name:'Mandap Decoration Full', category:'wedding', mrp:25000, sellingPrice:19999, image:'../images/cat-wedding.png', description:'Complete mandap setup' },
-        { id:'8', name:'Door Decoration', category:'onspot', mrp:499, sellingPrice:399, image:'../images/cat-onspot.png', description:'Toran-style door decoration' },
-        { id:'9', name:'White Lily Elegance', category:'bouquets', mrp:1299, sellingPrice:999, image:'../images/cat-flowers.png', description:'15 white Asiatic lilies' },
-        { id:'10', name:'Home Decoration Package', category:'onspot', mrp:3500, sellingPrice:2999, image:'../images/cat-onspot.png', description:'Festival home decoration' },
-        { id:'11', name:'Marigold Bulk (1 kg)', category:'flowers', mrp:150, sellingPrice:120, image:'../images/cat-bouquets.png', description:'Loose marigold flowers' },
-        { id:'12', name:'Reception Stage Décor', category:'wedding', mrp:35000, sellingPrice:29999, image:'../images/cat-wedding.png', description:'Luxury reception decoration' },
-      ];
-      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(defaults));
-      return defaults;
-    }
+    async function renderProducts() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        adminProducts = [];
+        querySnapshot.forEach((doc) => {
+          adminProducts.push(doc.data());
+        });
 
-    function saveAdminProducts(products) {
-      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-    }
-
-    function renderProducts() {
-      const products = getAdminProducts();
-      const grid = document.getElementById('adminProductGrid');
-      const catLabels = { bouquets:'Bouquets', flowers:'Flowers', wedding:'Wedding', onspot:'On-Spot' };
-      grid.innerHTML = products.map(p => `
-        <div class="admin-product-card">
-          <img src="${p.image}" alt="${p.name}" onerror="this.src='../images/cat-bouquets.png'">
-          <div class="info">
-            <span style="font-size:var(--fs-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">${catLabels[p.category]||p.category}</span>
-            <h4>${p.name}</h4>
-            <p class="price">₹${Number(p.sellingPrice).toLocaleString('en-IN')} <span style="text-decoration:line-through;color:var(--text-muted);font-weight:400;font-size:var(--fs-xs)">₹${Number(p.mrp).toLocaleString('en-IN')}</span></p>
+        const grid = document.getElementById('adminProductGrid');
+        const catLabels = { bouquets:'Bouquets', flowers:'Flowers', wedding:'Wedding', onspot:'On-Spot' };
+        grid.innerHTML = adminProducts.map(p => `
+          <div class="admin-product-card">
+            <img src="${p.image}" alt="${p.name}" onerror="this.src='../images/cat-bouquets.png'">
+            <div class="info">
+              <span style="font-size:var(--fs-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">${catLabels[p.category]||p.category}</span>
+              <h4>${p.name}</h4>
+              <p class="price">₹${Number(p.sellingPrice).toLocaleString('en-IN')} <span style="text-decoration:line-through;color:var(--text-muted);font-weight:400;font-size:var(--fs-xs)">₹${Number(p.mrp).toLocaleString('en-IN')}</span></p>
+            </div>
+            <div class="actions">
+              <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')">✏️ Edit</button>
+              <button class="btn btn-sm" style="background:var(--color-error);color:white" onclick="deleteProduct('${p.id}')">🗑️</button>
+            </div>
           </div>
-          <div class="actions">
-            <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')">✏️ Edit</button>
-            <button class="btn btn-sm" style="background:var(--color-error);color:white" onclick="deleteProduct('${p.id}')">🗑️</button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
     }
 
-    function openAddModal() {
+    window.openAddModal = function() {
       document.getElementById('modalTitle').textContent = 'Add Product';
       document.getElementById('editId').value = '';
       document.getElementById('pName').value = '';
@@ -168,12 +158,15 @@
       document.getElementById('pMRP').value = '';
       document.getElementById('pPrice').value = '';
       document.getElementById('pDesc').value = '';
-      document.getElementById('pImage').value = '';
+      document.getElementById('pImageFile').value = '';
+      document.getElementById('pImageBase64').value = '';
+      document.getElementById('pImagePreview').src = '';
+      document.getElementById('pImagePreview').style.display = 'none';
       document.getElementById('productModal').classList.add('active');
     }
 
-    function editProduct(id) {
-      const p = getAdminProducts().find(x => x.id === id);
+    window.editProduct = function(id) {
+      const p = adminProducts.find(x => x.id === id);
       if (!p) return;
       document.getElementById('modalTitle').textContent = 'Edit Product';
       document.getElementById('editId').value = p.id;
@@ -182,53 +175,91 @@
       document.getElementById('pMRP').value = p.mrp;
       document.getElementById('pPrice').value = p.sellingPrice;
       document.getElementById('pDesc').value = p.description || '';
-      document.getElementById('pImage').value = p.image || '';
+      document.getElementById('pImageFile').value = '';
+      document.getElementById('pImageBase64').value = p.image || '';
+      if (p.image) {
+        document.getElementById('pImagePreview').src = p.image;
+        document.getElementById('pImagePreview').style.display = 'block';
+      } else {
+        document.getElementById('pImagePreview').src = '';
+        document.getElementById('pImagePreview').style.display = 'none';
+      }
       document.getElementById('productModal').classList.add('active');
     }
 
-    function closeModal() {
+    window.closeModal = function() {
       document.getElementById('productModal').classList.remove('active');
     }
 
-    function saveProduct() {
+    window.previewImage = function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Str = e.target.result;
+          document.getElementById('pImageBase64').value = base64Str;
+          document.getElementById('pImagePreview').src = base64Str;
+          document.getElementById('pImagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    window.saveProduct = async function() {
       const name = document.getElementById('pName').value.trim();
       const mrp = Number(document.getElementById('pMRP').value);
       const price = Number(document.getElementById('pPrice').value);
       if (!name || !mrp || !price) { showToast('Please fill required fields', 'error'); return; }
 
-      const products = getAdminProducts();
       const editId = document.getElementById('editId').value;
-
       const product = {
         id: editId || 'P' + Date.now(),
         name: name,
         category: document.getElementById('pCategory').value,
         mrp: mrp,
         sellingPrice: price,
-        description: document.getElementById('pDesc').value.trim(),
-        image: document.getElementById('pImage').value.trim() || '../images/cat-bouquets.png',
+        description: document.getElementById('pDesc').value.trim()
       };
 
-      if (editId) {
-        const idx = products.findIndex(p => p.id === editId);
-        if (idx >= 0) products[idx] = product;
-        showToast('Product updated!', 'success');
-      } else {
-        products.push(product);
-        showToast('Product added!', 'success');
-      }
+      const saveBtn = document.querySelector('.modal-footer .btn-primary');
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
 
-      saveAdminProducts(products);
-      closeModal();
-      renderProducts();
+      try {
+        let imageStr = document.getElementById('pImageBase64').value || '../images/cat-bouquets.png';
+        
+        // If image is newly uploaded base64 data URL, upload to firebase storage
+        if (imageStr.startsWith('data:image')) {
+          const storageReference = ref(storage, 'products/' + product.id);
+          await uploadString(storageReference, imageStr, 'data_url');
+          imageStr = await getDownloadURL(storageReference);
+        }
+        product.image = imageStr;
+
+        await setDoc(doc(db, "products", product.id), product);
+        
+        showToast(editId ? 'Product updated!' : 'Product added!', 'success');
+        closeModal();
+        renderProducts();
+      } catch (err) {
+        console.error("Error saving product: ", err);
+        showToast('Error saving product', 'error');
+      } finally {
+        saveBtn.innerHTML = '💾 Save Product';
+        saveBtn.disabled = false;
+      }
     }
 
-    function deleteProduct(id) {
+    window.deleteProduct = async function(id) {
       if (!confirm('Delete this product?')) return;
-      const products = getAdminProducts().filter(p => p.id !== id);
-      saveAdminProducts(products);
-      showToast('Product deleted', 'info');
-      renderProducts();
+      try {
+        await deleteDoc(doc(db, "products", id));
+        showToast('Product deleted', 'info');
+        renderProducts();
+      } catch (err) {
+        console.error("Error deleting product: ", err);
+        showToast('Error deleting product', 'error');
+      }
     }
 
     renderProducts();

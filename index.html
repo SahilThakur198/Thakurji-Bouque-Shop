@@ -57,8 +57,8 @@
     <div class="petal" style="left:92%;animation-duration:13s;animation-delay:5s;width:10px;height:10px"></div>
 
     <div class="hero-content">
-      <div class="hero-badge">🌸 Nashik's Trusted Florist Since 2006</div>
-      <h1 id="heroTitle" style="transition: opacity 0.5s ease; min-height: 1.2em;">All <span class="highlight">flowers</span> in one place</h1>
+      <div class="hero-badge">🌸 Nashik's Trusted Florist Since 1995</div>
+      <h1 id="heroTitle" style="transition: opacity 0.5s ease; min-height: 1.2em;">Welcome to <span class="highlight">Thakurji</span> Bouque Shop</h1>
       <p>Fresh bouquets, stunning wedding decorations & personalized floral arrangements — crafted with love by Shri Mangesh Thakur.</p>
       <div class="hero-actions">
         <a href="catalog.html" class="btn btn-primary btn-lg">Browse Catalog</a>
@@ -119,78 +119,7 @@
         <p>Our most loved flower arrangements</p>
       </div>
       <div class="products-grid" id="featuredProducts">
-        <!-- Products loaded dynamically by JS, with static fallback -->
-        <div class="product-card reveal">
-          <div class="card-img-wrap">
-            <img src="images/cat-bouquets.png" alt="Red Rose Premium Bouquet">
-            <span class="discount-badge">20% OFF</span>
-          </div>
-          <div class="card-body">
-            <span class="product-category">Bouquets</span>
-            <h4 class="product-name">Red Rose Premium Bouquet</h4>
-            <div class="price-row">
-              <span class="price-selling">₹799</span>
-              <span class="price-mrp">₹999</span>
-            </div>
-            <div class="card-actions">
-              <a href="product.html?id=1" class="btn btn-outline btn-sm">View</a>
-              <button class="btn btn-primary btn-sm" onclick="addToCart({id:'1',name:'Red Rose Premium Bouquet',price:799,image:'images/cat-bouquets.png'})">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card reveal">
-          <div class="card-img-wrap">
-            <img src="images/cat-flowers.png" alt="Mixed Orchid Bundle">
-            <span class="discount-badge">15% OFF</span>
-          </div>
-          <div class="card-body">
-            <span class="product-category">Flowers</span>
-            <h4 class="product-name">Mixed Orchid Bundle</h4>
-            <div class="price-row">
-              <span class="price-selling">₹499</span>
-              <span class="price-mrp">₹599</span>
-            </div>
-            <div class="card-actions">
-              <a href="product.html?id=2" class="btn btn-outline btn-sm">View</a>
-              <button class="btn btn-primary btn-sm" onclick="addToCart({id:'2',name:'Mixed Orchid Bundle',price:499,image:'images/cat-flowers.png'})">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card reveal">
-          <div class="card-img-wrap">
-            <img src="images/cat-wedding.png" alt="Wedding Haar Set">
-          </div>
-          <div class="card-body">
-            <span class="product-category">Wedding</span>
-            <h4 class="product-name">Wedding Haar Set</h4>
-            <div class="price-row">
-              <span class="price-selling">₹2,499</span>
-              <span class="price-mrp">₹2,999</span>
-            </div>
-            <div class="card-actions">
-              <a href="product.html?id=3" class="btn btn-outline btn-sm">View</a>
-              <button class="btn btn-primary btn-sm" onclick="addToCart({id:'3',name:'Wedding Haar Set',price:2499,image:'images/cat-wedding.png'})">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card reveal">
-          <div class="card-img-wrap">
-            <img src="images/cat-onspot.png" alt="Car Decoration Package">
-            <span class="discount-badge">10% OFF</span>
-          </div>
-          <div class="card-body">
-            <span class="product-category">On-Spot</span>
-            <h4 class="product-name">Car Decoration Package</h4>
-            <div class="price-row">
-              <span class="price-selling">₹1,799</span>
-              <span class="price-mrp">₹1,999</span>
-            </div>
-            <div class="card-actions">
-              <a href="product.html?id=4" class="btn btn-outline btn-sm">View</a>
-              <button class="btn btn-primary btn-sm" onclick="addToCart({id:'4',name:'Car Decoration Package',price:1799,image:'images/cat-onspot.png'})">Add to Cart</button>
-            </div>
-          </div>
-        </div>
+        <!-- Products will be loaded dynamically by products.js from Firebase -->
       </div>
       <div class="text-center mt-8 reveal">
         <a href="catalog.html" class="btn btn-primary btn-lg">View All Products →</a>
@@ -243,7 +172,7 @@
             <div class="icon-circle">📍</div>
             <div>
               <h4>Address</h4>
-              <p><a href="https://maps.google.com/?q=Thakur+Bouque+Shop,+Infront+of+Padmanabh+Heights,+Datta+Mandir+Road,+Nashik,+Maharashtra" target="_blank" style="color:var(--text-body);text-decoration:underline;">Thakur Bouque Shop, Infront of Padmanabh Heights, Datta Mandir Road, Gayakward Malla, Nashik, Maharashtra</a></p>
+              <p><a href="https://maps.google.com/?q=Thakur+Bouque+Shop,+Infront+of+Padmanabh+Heights,+Datta+Mandir+Road,+Nashik,+Maharashtra" target="_blank" style="color:var(--color-accent);text-decoration:underline;">Thakur Bouque Shop, Infront of Padmanabh Heights, Datta Mandir Road, Gayakward Malla, Nashik, Maharashtra</a></p>
             </div>
           </div>
           <div class="contact-info-item">
@@ -291,6 +220,7 @@
 
   <script src="js/ui.js"></script>
   <script src="js/cart.js"></script>
+  <script type="module" src="js/products.js"></script>
   <script>
     // Cycle hero title in 3 languages (English, Marathi, Hindi)
     document.addEventListener("DOMContentLoaded", () => {
@@ -298,9 +228,9 @@
       if (!heroTitle) return;
 
       const titles = [
-        `Your ultimate destination for <span class="highlight">exquisite</span> floral artistry`, // English
-        `आकर्षक आणि <span class="highlight">ताज्या</span> फुलांचे ठिकाण`,            // Marathi
-        `ताज़े और <span class="highlight">खूबसूरत </span>! फूलों की बेहतरीन मंज़िल`            // Hindi
+        `Welcome to <span class="highlight">Thakurji</span> Bouque Shop`,                   // English
+        `<span class="highlight">ठाकुरजी</span> बुके शॉप मध्ये आपले स्वागत आहे`,          // Marathi
+        `<span class="highlight">ठाकुरजी</span> बुके शॉप में आपका स्वागत है`              // Hindi
       ];
       
       let index = 0;

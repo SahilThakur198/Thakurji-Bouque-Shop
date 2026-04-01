@@ -1,0 +1,26 @@
+# Node / Firebase
+node_modules/
+.firebase/
+.firebaserc.local
+
+# Environment / Secrets — DO NOT COMMIT
+js/env.config.js
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*

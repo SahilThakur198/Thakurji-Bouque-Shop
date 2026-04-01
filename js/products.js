@@ -2,7 +2,8 @@
    Products Module — Sample Data & Rendering
    ============================================ */
 
-// Sample products data (will be replaced by Firebase later)
+import { db, collection, getDocs, doc, setDoc } from "./firebaseConfig.js";
+
 const SAMPLE_PRODUCTS = [
   {
     id: '1', name: 'Red Rose Premium Bouquet', category: 'bouquets',
@@ -66,17 +67,40 @@ const SAMPLE_PRODUCTS = [
   }
 ];
 
-function getProducts() {
-  return SAMPLE_PRODUCTS;
+let cachedProducts = null;
+
+async function fetchProducts() {
+  if (cachedProducts) return cachedProducts;
+  try {
+    const snap = await getDocs(collection(db, "products"));
+    if (snap.empty) {
+      for (const p of SAMPLE_PRODUCTS) {
+        await setDoc(doc(db, "products", p.id), p);
+      }
+      cachedProducts = [...SAMPLE_PRODUCTS];
+      return cachedProducts;
+    }
+    const arr = [];
+    snap.forEach(d => arr.push(d.data()));
+    cachedProducts = arr;
+    return arr;
+  } catch(e) {
+    console.error(e);
+    return SAMPLE_PRODUCTS;
+  }
 }
 
-function getProductById(id) {
-  return SAMPLE_PRODUCTS.find(p => p.id === id);
+async function getProducts() { return await fetchProducts(); }
+
+async function getProductById(id) {
+  const p = await fetchProducts();
+  return p.find(x => x.id === String(id));
 }
 
-function getProductsByCategory(cat) {
-  if (!cat || cat === 'all') return SAMPLE_PRODUCTS;
-  return SAMPLE_PRODUCTS.filter(p => p.category === cat);
+async function getProductsByCategory(cat) {
+  const p = await fetchProducts();
+  if (!cat || cat === 'all') return p;
+  return p.filter(x => x.category === cat);
 }
 
 // --- Render product card HTML ---
@@ -107,19 +131,18 @@ function productCardHTML(p) {
 }
 
 // --- Catalog Page Logic ---
-function initCatalog() {
+async function initCatalog() {
   const grid = document.getElementById('catalogGrid');
   const tabs = document.getElementById('filterTabs');
   const empty = document.getElementById('emptyState');
   if (!grid || !tabs) return;
 
-  // Read category from URL
   const params = new URLSearchParams(window.location.search);
   let activeCat = params.get('cat') || 'all';
 
-  function render(cat) {
+  async function render(cat) {
     activeCat = cat;
-    const products = getProductsByCategory(cat);
+    const products = await getProductsByCategory(cat);
     grid.innerHTML = products.map(productCardHTML).join('');
     empty.classList.toggle('hidden', products.length > 0);
 
@@ -133,17 +156,17 @@ function initCatalog() {
     if (tab) render(tab.dataset.cat);
   });
 
-  render(activeCat);
+  await render(activeCat);
 }
 
 // --- Product Detail Page Logic ---
-function initProductDetail() {
+async function initProductDetail() {
   const detail = document.getElementById('productDetail');
   if (!detail) return;
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
-  const product = getProductById(id);
+  const product = await getProductById(id);
 
   if (!product) {
     detail.innerHTML = '<div class="empty-state"><div class="empty-icon">😕</div><h3>Product not found</h3><p><a href="catalog.html" class="btn btn-primary">Browse Catalog</a></p></div>';
@@ -152,7 +175,13 @@ function initProductDetail() {
 
   document.title = `${product.name} — Thakurji Bouque Shop`;
   document.getElementById('breadcrumbName').textContent = product.name;
-  document.getElementById('productImg').src = product.image;
+  
+  // If the image starts with "products/", let's build the Storage reference URL if they didn't get DownloadURL?
+  // Our admin panel gets DownloadURL directly, so it's a full URL.
+  const imageUrl = product.image.startsWith('images/') ? '../' + product.image : product.image;
+  // Actually, from product detail page, images/ might be fine if we're in root.
+  document.getElementById('productImg').src = product.image.includes('images/') ? product.image.replace('../', '') : product.image;
+  
   document.getElementById('productImg').alt = product.name;
   document.getElementById('productName').textContent = product.name;
   document.getElementById('productCat').textContent = { bouquets: 'Bouquets', flowers: 'Flowers', wedding: 'Wedding', onspot: 'On-Spot' }[product.category] || product.category;
@@ -165,22 +194,30 @@ function initProductDetail() {
     addToCart({ id: product.id, name: product.name, price: product.sellingPrice, image: product.image });
   };
 
-  // WhatsApp link with product name
   const waLink = detail.querySelector('a[href*="wa.me"]');
   if (waLink) {
     waLink.href = `https://wa.me/919623289818?text=Hi! I am interested in: ${encodeURIComponent(product.name)} (₹${product.sellingPrice})`;
   }
 
-  // Related products
   const related = document.getElementById('relatedProducts');
   if (related) {
-    const others = SAMPLE_PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+    const allProducts = await getProducts();
+    const others = allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
     related.innerHTML = others.map(productCardHTML).join('');
   }
 }
 
 // --- Initialize based on page ---
+async function initFeaturedProducts() {
+  const featured = document.getElementById('featuredProducts');
+  if (!featured) return;
+  const allProducts = await getProducts();
+  const top4 = allProducts.slice(0, 4);
+  featured.innerHTML = top4.map(productCardHTML).join('');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('catalogGrid')) initCatalog();
   if (document.getElementById('productDetail')) initProductDetail();
+  if (document.getElementById('featuredProducts')) initFeaturedProducts();
 });
